@@ -2,5 +2,6 @@
 
 @interface PolynomialConverter : NSObject
 - (NSString*)convertToStringFrom:(NSArray <NSNumber*>*)numbers;
+
 @end
 
