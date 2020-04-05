@@ -1,9 +1,13 @@
 #import "ViewController.h"
 
-@interface ViewController ()
+@interface ViewController(){
+    BOOL errorFlag;
+}
 
 - (void)setupUI;
-- (BOOL)check;
+- (BOOL)checkError;
+- (NSString *)hexStringFromColor:(UIColor *)color;
+- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField;
 
 @end
 
@@ -17,61 +21,113 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    errorFlag = NO;
+    
     [self setupUI];
-//    self.view.accessibilityIdentifier = @"mainView";
-//    textFieldRed.accessibilityIdentifier = @"textFieldRed";
-//    textFieldGreen.accessibilityIdentifier = @"textFieldGreen";
-//    textFieldBlue.accessibilityIdentifier = @"textFieldBlue";
-//    buttonProcess.accessibilityIdentifier = @"buttonProcess";
-//    labelRed.accessibilityIdentifier = @"labelRed";
-//    labelGreen.accessibilityIdentifier = @"labelGreen";
-//    labelBlue.accessibilityIdentifier = @"labelBlue";
-//    labelResultColor.accessibilityIdentifier = @"labelResultColor";
-//    viewResultColor.accessibilityIdentifier = @"viewResultColor";
-//
+    self.view.accessibilityIdentifier = @"mainView";
+    textFieldRed.accessibilityIdentifier = @"textFieldRed";
+    textFieldGreen.accessibilityIdentifier = @"textFieldGreen";
+    textFieldBlue.accessibilityIdentifier = @"textFieldBlue";
+    buttonProcess.accessibilityIdentifier = @"buttonProcess";
+    labelRed.accessibilityIdentifier = @"labelRed";
+    labelGreen.accessibilityIdentifier = @"labelGreen";
+    labelBlue.accessibilityIdentifier = @"labelBlue";
+    labelResultColor.accessibilityIdentifier = @"labelResultColor";
+    viewResultColor.accessibilityIdentifier = @"viewResultColor";
+
 }
 
 - (void)dealloc {
-//    [labelResultColor release];
-//    [labelRed release];
-//    [labelGreen release];
-//    [labelBlue release];
-//    [viewResultColor release];
-//    [textFieldRed release];
-//    [textFieldGreen release];
-//    [textFieldBlue release];
-//    [buttonProcess release];
-//    [super dealloc];
-}
-- (void)buttonProcessPressed {
-    NSLog(@"Button tapped");
-    if(![self check]) {
-        
-    }
-//    NSInteger red = [[textFieldRed text] intValue];
-//    NSInteger green = [[textFieldGreen text] intValue];
-//    NSInteger blue = [[textFieldBlue text] intValue];
-//    
+    [labelResultColor release];
+    [labelRed release];
+    [labelGreen release];
+    [labelBlue release];
+    [viewResultColor release];
+    [textFieldRed release];
+    [textFieldGreen release];
+    [textFieldBlue release];
+    [buttonProcess release];
+    [super dealloc];
 }
 
--(BOOL)check {
+- (void)buttonProcessPressed {
+    [textFieldRed resignFirstResponder];
+    [textFieldBlue resignFirstResponder];
+    [textFieldGreen resignFirstResponder];
+     
+    NSLog(@"Button tapped");
+    if([self checkError]) {
+        [labelResultColor setText:@"Error"];
+        errorFlag = YES;
+        return;
+    }
+    NSInteger red = [[textFieldRed text] intValue];
+    NSInteger green = [[textFieldGreen text] intValue];
+    NSInteger blue = [[textFieldBlue text] intValue];
+    [textFieldRed setText:@""];
+    [textFieldGreen setText:@""];
+    [textFieldBlue setText:@""];
+
+    UIColor *color = [UIColor colorWithRed:(CGFloat)red/255
+                                     green:(CGFloat)green/255
+                                      blue:(CGFloat)blue/255
+                                     alpha:1.0];
+    
+    [viewResultColor setBackgroundColor:color];
+    
+    [labelResultColor setText:[self hexStringFromColor:color]];
+}
+
+- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
+    [labelResultColor setText:@"Color"];
+    [viewResultColor setBackgroundColor:UIColor.blackColor];
+    if(errorFlag) {
+        errorFlag = NO;
+    }
+    //[textField becomeFirstResponder];
+    return YES;
+}
+
+- (BOOL)checkError {
     NSString *red = textFieldRed.text;
     NSString *green = textFieldGreen.text;
     NSString *blue = textFieldBlue.text;
     
     if(red.length == 0) {
-        return NO;
+        return YES;
     }
     if(green.length == 0) {
-        return NO;
+        return YES;
     }
     if(blue.length == 0) {
-        return NO;
+        return YES;
     }
-    return 0;
+    
+    if(![textFieldRed.text isEqual:[NSString stringWithFormat:@"%d", red.intValue]] ){
+        return YES;
+    }
+    if(![textFieldGreen.text isEqual:[NSString stringWithFormat:@"%d", green.intValue]]){
+        return YES;
+    }
+    if(![textFieldBlue.text isEqual:[NSString stringWithFormat:@"%d", blue.intValue]]){
+        return YES;
+    }
+    
+    
+    if(red.intValue > 255 || red.intValue < 0){
+        return YES;
+    }
+    if(green.intValue > 255 || green.intValue < 0){
+        return YES;
+    }
+    if(blue.intValue > 255 || blue.intValue < 0){
+        return YES;
+    }
+    
+    return NO;
 }
 
--(void)setupUI {
+- (void)setupUI {
     CGFloat heigh = 30.0;
     CGFloat viewWidth = self.view.frame.size.width;
     
@@ -102,10 +158,10 @@
                                                                  heigh)];
     textFieldRed.placeholder = @"0..255";
     textFieldRed.borderStyle = UITextBorderStyleRoundedRect;
+    [textFieldRed setDelegate:self];
     [self.view addSubview:textFieldRed];
 
-
-    labelGreen = [[UILabel alloc] initWithFrame:CGRectMake(20,
+labelGreen = [[UILabel alloc] initWithFrame:CGRectMake(20,
                                                            labelRed.frame.origin.y + heigh + 10,
                                                            80,
                                                            heigh)];
@@ -118,6 +174,7 @@
                                                                    heigh)];
     textFieldGreen.placeholder = @"0..255";
     textFieldGreen.borderStyle = UITextBorderStyleRoundedRect;
+    [textFieldGreen setDelegate:self];
     [self.view addSubview:textFieldGreen];
     
     labelBlue = [[UILabel alloc] initWithFrame:CGRectMake(20,
@@ -133,6 +190,7 @@
                                                                    heigh)];
     textFieldBlue.placeholder = @"0..255";
     textFieldBlue.borderStyle = UITextBorderStyleRoundedRect;
+    [textFieldBlue setDelegate:self];
     [self.view addSubview:textFieldBlue];
     
     buttonProcess = [[UIButton alloc] initWithFrame:CGRectMake(viewWidth / 2 - 50,
@@ -144,7 +202,15 @@
     [buttonProcess setTitleColor:UIColor.systemBlueColor forState:UIControlStateNormal];
     [buttonProcess addTarget:self action:@selector(buttonProcessPressed) forControlEvents:UIControlEventTouchUpInside];
     
-    [self.view addSubview:buttonProcess];    
+    [self.view addSubview:buttonProcess];
+}
+
+- (NSString *)hexStringFromColor:(UIColor *)color {
+    const CGFloat *components = CGColorGetComponents(color.CGColor);
+    CGFloat r = components[0];
+    CGFloat g = components[1];
+    CGFloat b = components[2];
+    NSString *hexString=[NSString stringWithFormat:@"0x%02X%02X%02X", (int)(r*255), (int)(g*255), (int)(b*255)];
+    return hexString;
 }
 @end
-
