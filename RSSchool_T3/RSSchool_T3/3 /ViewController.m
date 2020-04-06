@@ -80,7 +80,7 @@
 
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
     [labelResultColor setText:@"Color"];
-    [viewResultColor setBackgroundColor:UIColor.blackColor];
+    [viewResultColor setBackgroundColor:[UIColor blackColor]];
     if(errorFlag) {
         errorFlag = NO;
     }
@@ -142,7 +142,7 @@
                                                                100,
                                                                viewWidth - 150,
                                                                heigh)];
-    viewResultColor.backgroundColor = UIColor.blackColor;
+    viewResultColor.backgroundColor = [UIColor blackColor];
     [self.view addSubview:viewResultColor];
 
     labelRed = [[UILabel alloc] initWithFrame:CGRectMake(20,
@@ -199,7 +199,7 @@ labelGreen = [[UILabel alloc] initWithFrame:CGRectMake(20,
                                                                heigh)];
     //buttonProcess.titleLabel.text = @"Process";
     [buttonProcess setTitle:@"Process" forState:UIControlStateNormal];
-    [buttonProcess setTitleColor:UIColor.systemBlueColor forState:UIControlStateNormal];
+    [buttonProcess setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
     [buttonProcess addTarget:self action:@selector(buttonProcessPressed) forControlEvents:UIControlEventTouchUpInside];
     
     [self.view addSubview:buttonProcess];
